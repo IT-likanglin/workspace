@@ -1,6 +1,7 @@
 package com.chlian.trade.service;
 
 import com.chlian.trade.domain.AccountBook;
+import com.chlian.trade.domain.vo.AccountBookVo;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,8 +16,9 @@ public interface IAccountBookService {
 
     void deleteById(Integer id);
 
-    void addAccountBook(AccountBook accountBook);
+    void addAccountBook(AccountBookVo accountBook) throws IllegalAccessException;
 
     void updateAccountBook(Integer id, AccountBook accountBook);
 
+    void addAccountBook(AccountBook accountBook);
 }

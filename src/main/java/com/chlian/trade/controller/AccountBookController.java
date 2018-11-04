@@ -2,13 +2,11 @@ package com.chlian.trade.controller;
 
 import com.chlian.trade.domain.AccountBook;
 import com.chlian.trade.domain.RestResult;
+import com.chlian.trade.domain.vo.AccountBookVo;
 import com.chlian.trade.service.IAccountBookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,21 +23,26 @@ public class AccountBookController extends BaseController {
     @Autowired
     private IAccountBookService accountBookService;
 
+
     /**
-     * 账本记录新增
-     * @param accountBook  账本记录
-     * @return
-     */
-    @RequestMapping(value = "", method = RequestMethod.POST)
-    public RestResult<?> addAccountBook(AccountBook accountBook) {
+     * 账本记录新增，需要传送账本记录，以及
+     * @param accountBookVo
+     * @Return
+     * */
+    @RequestMapping(value = "",method = RequestMethod.POST)
+    public RestResult<?>  addAccountBook(@RequestBody AccountBookVo accountBookVo){
+
         try {
-            accountBookService.addAccountBook(accountBook);
-            return new RestResult<>().success("新增成功");
+            accountBookService.addAccountBook(accountBookVo);
+            return new RestResult<>().success("增加成功");
         } catch (Exception e) {
-            logger.error("数据新增失败，详细信息：" + e.getMessage());
+            e.printStackTrace();
+            return new RestResult<>().error(e.getMessage());
         }
-        return new RestResult<>().error("数据新增出错");
+
     }
+
+
 
     /**
      * 根据ID删除交易账本记录

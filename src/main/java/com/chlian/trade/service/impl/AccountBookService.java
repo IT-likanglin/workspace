@@ -1,8 +1,11 @@
 package com.chlian.trade.service.impl;
 
 import com.chlian.trade.dao.IAccountBookDAO;
+import com.chlian.trade.dao.IAccountBookLogDAO;
 import com.chlian.trade.domain.AccountBook;
+import com.chlian.trade.domain.vo.AccountBookVo;
 import com.chlian.trade.service.IAccountBookService;
+import com.chlian.trade.utils.UUIDUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -13,8 +16,12 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AccountBookService implements IAccountBookService {
@@ -22,6 +29,51 @@ public class AccountBookService implements IAccountBookService {
     @Autowired
     private IAccountBookDAO accountBookDAO;
 
+    @Autowired
+    private IAccountBookLogDAO accountBookLogDAO;
+
+
+    @Override
+    @Transactional
+    public void addAccountBook(AccountBookVo accountBookVo) throws IllegalAccessException {
+
+        if(accountBookVo == null && accountBookVo.getAccountBooks().size() == 0){
+            throw new RuntimeException("交易记录不能为空");
+        }
+        String UUId = UUIDUtils.getUUID();
+        int flag = 0;
+        for(AccountBook accountBook : accountBookVo.getAccountBooks()){
+            accountBook.setSerial_code(UUId);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            accountBook.setCreated_at(simpleDateFormat.format(new Date()));
+            accountBook.setUpdated_at(simpleDateFormat.format(new Date()));
+            flag += accountBook.getFunds();
+            isNullOrEmpty(accountBook);
+        }
+        if(flag != 0){
+            throw new RuntimeException("交易资金有误");
+        }
+
+        for(AccountBook accountBook : accountBookVo.getAccountBooks()){
+            accountBook.setId(null);
+            accountBookDAO.save(accountBook);
+        }
+        accountBookVo.getAccountBookLog().setSerial_code(UUId);
+        isNullOrEmpty(accountBookVo.getAccountBookLog());
+        accountBookLogDAO.save(accountBookVo.getAccountBookLog());
+    }
+
+    private void isNullOrEmpty(Object obj) throws IllegalAccessException {
+        for(Field field : obj.getClass().getDeclaredFields()){
+            field.setAccessible(true);
+            if("id".equals(field.getName())){
+                continue;
+            }
+            if(field.get(obj) == null || "".equals(field.get(obj))){
+                throw new RuntimeException(field.getName()+"不能为空");
+            }
+        }
+    }
 
     @Override
     @Cacheable(value = "secondlevels", key = "#accountBook1")
