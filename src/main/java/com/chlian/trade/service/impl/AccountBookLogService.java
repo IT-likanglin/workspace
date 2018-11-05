@@ -29,6 +29,7 @@ public class AccountBookLogService implements IAccountBookLogService {
     public void updateStatus(String id, Integer status) {
         AccountBookLog accountBookLog = accountBookLogDAO.findById(id).get();
         accountBookLog.setStatus(status);
+        accountBookLogDAO.save(accountBookLog);
     }
 
     @Override
@@ -77,6 +78,7 @@ public class AccountBookLogService implements IAccountBookLogService {
         if(accountBookLog.getTrace() != null) {
             updateAccountBookLOg.setTrace(accountBookLog.getTrace());
         }
+        accountBookLogDAO.save(updateAccountBookLOg);
     }
 
     @Override
