@@ -24,6 +24,15 @@ public class AccountBookLogService implements IAccountBookLogService {
 
     @Override
     @Transactional
+    @Modifying
+    @CacheEvict(cacheNames = "secondlevels", allEntries = true)
+    public void updateStatus(String id, Integer status) {
+        AccountBookLog accountBookLog = accountBookLogDAO.findById(id).get();
+        accountBookLog.setStatus(status);
+    }
+
+    @Override
+    @Transactional
     @CacheEvict(cacheNames = "secondlevels", allEntries = true)
     public void addAccountBookLog(AccountBookLog accountBookLog) {
         accountBookLogDAO.save(accountBookLog);

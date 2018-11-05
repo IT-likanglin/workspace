@@ -134,4 +134,20 @@ public class AccountBookLogController extends BaseController {
         return new RestResult<>().error("数据查询出错");
     }
 
+    /**
+     * 根据id修改日志的审核状态
+     * @param status 审核状态
+     * @return
+     * */
+    @RequestMapping(value = "/{id}/{status}",method = RequestMethod.PUT)
+    public RestResult<?> updateStatus(@PathVariable(value = "id") String id,@PathVariable(value = "status") Integer status){
+        try {
+            accountBookLogService.updateStatus(id,status);
+            return new RestResult<>().success("修改成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new RestResult<>().error("修改失败");
+        }
+    }
+
 }

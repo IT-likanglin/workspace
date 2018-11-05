@@ -58,4 +58,18 @@ public class RedisTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void test1(){
+        AccountBookVo accountBookVo = new AccountBookVo();
+        Specification<AccountBook> spec = new Specification() {
+            @Override
+            public Predicate toPredicate(Root root, CriteriaQuery criteriaQuery, CriteriaBuilder cb) {
+                Path serial_code = root.get("created_at");
+                Predicate pre = cb.greaterThanOrEqualTo(serial_code, "2018-11-05 03:16:38");
+                return pre;
+            }
+        };
+        List<AccountBook> all = iAccountBookDAO.findAll(spec);
+    }
 }

@@ -8,8 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.ResultSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import static com.sun.xml.internal.ws.api.model.wsdl.WSDLBoundOperation.ANONYMOUS.optional;
 
 /**
  * 账本Controller
@@ -25,7 +29,7 @@ public class AccountBookController extends BaseController {
 
 
     /**
-     * 账本记录新增，需要传送账本记录，以及
+     * 账本记录新增，需要传送账本记录，以及账本更新日志
      * @param accountBookVo
      * @Return
      * */
@@ -100,8 +104,8 @@ public class AccountBookController extends BaseController {
     @RequestMapping(value = "/{id}")
     public RestResult<?> findById(@PathVariable(value = "id") String id) {
         try {
-            Optional optional = accountBookService.findById(Integer.parseInt(id));
-            return new RestResult<>().success(optional);
+            AccountBookVo accountBookVo = accountBookService.findById(Integer.parseInt(id));
+            return new RestResult<>().success(accountBookVo);
         } catch (Exception e) {
             logger.error("数据查询出错，详细信息：" + e.getMessage());
         }
@@ -131,6 +135,57 @@ public class AccountBookController extends BaseController {
             logger.error("数据查询出错，详细信息：" + e.getMessage());
         }
         return new RestResult<>().error("数据查询出错");
+    }
+
+
+    /**
+     * 账本记录列表多条件查询
+     * @param searchMap 查询条件
+     * */
+    @RequestMapping(value = "/findBySpec",method=RequestMethod.POST)
+    public RestResult<?> findBySpec(@RequestBody Map<String,String> searchMap){
+        try {
+            List<AccountBookVo> accountBookVos = accountBookService.findBySpec(searchMap);
+            return new RestResult<>().success(accountBookVos);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new RestResult<>().error("数据查询出错");
+        }
+    }
+
+    /**
+     *账本记录查询，根据订单号查询
+     * @param out_biz_code 订单号
+     * */
+    @RequestMapping(value = "/out_biz_code/{out_biz_code}",method = RequestMethod.GET)
+    public RestResult<?> findByOut_biz_code(@PathVariable(value = "out_biz_code") String out_biz_code){
+        try {
+            if(out_biz_code == null || "".equals(out_biz_code.trim())){
+                return new RestResult<>().error("订单号不能为空");
+            }
+            List<AccountBookVo> accountBookVos = accountBookService.findByOut_biz_code(out_biz_code.trim());
+            return new RestResult<>().success(accountBookVos);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new RestResult<>().error("数据查询出错");
+        }
+    }
+
+    /**
+     *账本记录查询，根据业务序号查询
+     * */
+    @RequestMapping(value = "/serial_code/{serial_code}",method = RequestMethod.GET)
+    public RestResult<?> findByserial_code(@PathVariable(value = "serial_code") String serial_code){
+        try {
+            if(serial_code == null || "".equals(serial_code.trim())){
+                return new RestResult<>().error("业务序列号不能为空");
+            }
+            List<AccountBookVo> accountBookVos = accountBookService.findBySerial_code(serial_code.trim());
+            return new RestResult<>().success(accountBookVos);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new RestResult<>().error("数据查询出错");
+        }
     }
 
 }

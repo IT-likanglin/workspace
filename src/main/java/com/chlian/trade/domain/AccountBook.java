@@ -20,6 +20,7 @@ public class AccountBook {
     private String out_biz_code; //varchar(255) COMMENT ''外部编号''
     private String created_at; //timestamp
     private String updated_at; //timestamp
+    private String trade_type;//账本来源，正常或礼包
 
     public Integer getId() {
         return id;
@@ -93,6 +94,13 @@ public class AccountBook {
         this.updated_at = updated_at;
     }
 
+    public String getTrade_type() {
+        return trade_type;
+    }
+
+    public void setTrade_type(String trade_type) {
+        this.trade_type = trade_type;
+    }
 
     @Override
     public String toString() {

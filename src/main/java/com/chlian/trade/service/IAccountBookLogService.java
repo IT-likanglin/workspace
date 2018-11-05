@@ -17,4 +17,9 @@ public interface IAccountBookLogService {
     Optional findById(String id);
 
     List<AccountBookLog> findAllByPage(int parseInt, int parseInt1);
+
+    /**
+     * 修改指定日志的审核状态
+     * */
+    void updateStatus(String id, Integer status);
 }
